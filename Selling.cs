@@ -22,8 +22,17 @@ namespace SuperMarketApp
         SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["market-Conn"].ConnectionString);
         private void populatebill()
         {
+            string query = "";
+            if (Form1.sellername == "admin")
+            {
+                 query = "select BillNo,SellerName,Billdate,TotalAmount from SellingTb";
 
-            string query = "select BillNo,SellerName,Billdate,TotalAmount from SellingTb";
+
+            }
+            else
+            {
+                 query = "select BillNo,SellerName,Billdate,TotalAmount from SellingTb Where SellerName='" + Form1.sellername + "' ";
+            }
             SqlDataAdapter std = new SqlDataAdapter(query, conn);
             SqlCommandBuilder bld = new SqlCommandBuilder(std);
             var ds = new DataSet();
@@ -89,32 +98,108 @@ namespace SuperMarketApp
         private void addproduct()
         {
             double grtotal = 0;
-           
-            double total = Convert.ToDouble(textBox3.Text.Trim()) * Convert.ToDouble(textBox4.Text.Trim());
-            DataGridViewRow newrow = new  DataGridViewRow();
-            newrow.CreateCells(dataGridView3);
-            newrow.Cells[0].Value = n + 1;
-            newrow.Cells[1].Value = textBox2.Text;
-            newrow.Cells[2].Value = textBox3.Text;
-            newrow.Cells[3].Value = textBox4.Text;
-            n++;
-            newrow.Cells[4].Value = total;
-            dataGridView3.Rows.Add(newrow);
-            
-            grtotal = grtotal + total;
-            //label4.Text = "Total Amount "+ " " + grtotal;
-            label12.Text =  grtotal.ToString();
+            if (textBox4.Text == "" || textBox4.Text.GetType().Equals("string"))
+            {
+                MessageBox.Show("please Enter Correct quantity");
+            }
+            else
+            {
+                try
+                {
+                    double total = Convert.ToDouble(textBox3.Text.Trim()) * Convert.ToDouble(textBox4.Text.Trim());
 
+
+
+
+                    DataGridViewRow newrow = new DataGridViewRow();
+                    newrow.CreateCells(dataGridView3);
+                    newrow.Cells[0].Value = n + 1;
+                    newrow.Cells[1].Value = textBox2.Text;
+                    newrow.Cells[2].Value = textBox3.Text;
+                    newrow.Cells[3].Value = textBox4.Text;
+                    n++;
+                    newrow.Cells[4].Value = total;
+                    dataGridView3.Rows.Add(newrow);
+
+                    grtotal = grtotal + total;
+
+                    label12.Text = grtotal.ToString();
+                    sum += grtotal;
+                    Math.Round(sum);
+
+                    label18.Text = sum.ToString();
+                    clear();
+                }
+                catch(Exception ex)
+                {
+                  //  MessageBox.Show(ex.Message);
+                    MessageBox.Show("please Enter Correct quantity");
+
+                }
+            }
+
+        }
+
+        private void editproduct()
+        {
+            double grtotal = 0;
+
+            double total = Convert.ToDouble(textBox3.Text.Trim()) * Convert.ToDouble(textBox4.Text.Trim());
+            dataGridView3.SelectedRows[0].Cells[0].Value = n + 1;
+            dataGridView3.SelectedRows[0].Cells[1].Value= textBox2.Text;
+            dataGridView3.SelectedRows[0].Cells[2].Value= textBox3.Text;
+            dataGridView3.SelectedRows[0].Cells[3].Value= textBox4.Text;
+            dataGridView3.SelectedRows[0].Cells[4].Value= total;
+
+            grtotal = grtotal + total;
+
+            label12.Text = grtotal.ToString();
+
+            sum += grtotal;
+            Math.Round(sum);
+
+            label18.Text = sum.ToString();
 
 
 
         }
+        private void delproduct()
+        {
+            double grtotal = 0;
+
+            double total = 0;
+            dataGridView3.SelectedRows[0].Cells[0].Value = "";
+            dataGridView3.SelectedRows[0].Cells[1].Value = "";
+            dataGridView3.SelectedRows[0].Cells[2].Value = "";
+            dataGridView3.SelectedRows[0].Cells[3].Value = "";
+            dataGridView3.SelectedRows[0].Cells[4].Value = total;
+
+            grtotal = grtotal + total;
+
+            // label12.Text = grtotal.ToString();
+
+            sum += grtotal;
+            Math.Round(sum);
+            label18.Text = sum.ToString();
+
+
+
+        }
+
+
+
         private void clear() {
             textBox1.Text = "";
+            textBox4.Text = "";
         }
         private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            button4.Enabled = false;
             label12.Text = dataGridView3.SelectedRows[0].Cells[4].Value.ToString();
+
+            textBox2.Text = dataGridView3.SelectedRows[0].Cells[1].Value.ToString();
+            textBox3.Text = dataGridView3.SelectedRows[0].Cells[2].Value.ToString();
+            textBox4.Text = dataGridView3.SelectedRows[0].Cells[3].Value.ToString();
 
         }
         private void printbill() { 
@@ -127,11 +212,23 @@ namespace SuperMarketApp
         {
             Application.Exit();
         }
-
+        public double sum = 0;
         private void Selling_Load(object sender, EventArgs e)
         {
+            button2.Enabled = false;
             label9.Text = Form1.sellername;
-
+            if (label9.Text == "admin")
+            {
+                label14.Visible = true;
+                label15.Visible = true;
+                label16.Visible = true;
+            }
+            else
+            {
+                label14.Visible = false;
+                label15.Visible = false;
+                label16.Visible = false;
+            }
             populate();
             fillcombo();
             getdate();
@@ -165,7 +262,8 @@ namespace SuperMarketApp
             try
             {
                 conn.Open();
-                string query = "insert into SellingTb values('" + label9.Text + "','" + label12.Text + "','" + dateformat + "','" + textBox1.Text + "') ";
+               // string query = "insert into SellingTb values('" + label9.Text + "','" + label12.Text + "','" + dateformat + "','" + textBox1.Text + "') ";
+                string query = "insert into SellingTb values('" + label9.Text + "','" + sum + "','" + dateformat + "','" + textBox1.Text + "') ";
              
                 SqlCommand cmd = new SqlCommand(query, conn);
                 cmd.ExecuteNonQuery();
@@ -185,7 +283,7 @@ namespace SuperMarketApp
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            button2.Enabled = true;
             //textBox1.Text = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
             //textBox3.Text = dataGridView2.SelectedRows[0].Cells[1].Value.ToString();
             //textBox3.Text = dataGridView2.SelectedRows[0].Cells[1].Value.ToString();
@@ -219,6 +317,51 @@ namespace SuperMarketApp
             printPreviewDialog1.Document = printDocument1;
             printPreviewDialog1.ShowDialog();
            
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label14_Click_1(object sender, EventArgs e)
+        {
+            ManageProducts mg = new ManageProducts();
+            this.Hide();
+            mg.Show();
+        }
+
+        private void label15_Click(object sender, EventArgs e)
+        {
+            ManageCategory mg = new ManageCategory();
+            this.Hide();
+            mg.Show();
+        }
+
+        private void label16_Click(object sender, EventArgs e)
+        {
+            ManageSellers mg = new ManageSellers();
+            this.Hide();
+            mg.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            editproduct();
+            clear();
+        }
+
+        private void label17_Click(object sender, EventArgs e)
+        {
+            clear();
+            button4.Enabled = true;
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            delproduct();
+            clear();
         }
     }
 }

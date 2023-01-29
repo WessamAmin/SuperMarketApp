@@ -52,6 +52,7 @@ namespace SuperMarketApp
                         {
                             if (usernametext.Text == "admin" && passwordtext.Text == "1")
                             {
+                                sellername = usernametext.Text;
                                 ManageProducts mg = new ManageProducts();
                                 this.Hide();
                                 mg.Show();

@@ -13,13 +13,15 @@ namespace SuperMarketApp
 {
     public partial class ManageCategory : Form
     {
+
        
         SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["market-Conn"].ConnectionString);
+       public static int z;
         public ManageCategory()
         {
             InitializeComponent();
         }
-       
+        public static string cat2 = "";
         private void label11_Click(object sender, EventArgs e)
         {
             Application.Exit();
@@ -50,23 +52,33 @@ namespace SuperMarketApp
 
 
         }
+        public static List<string> l = new List<string>();
         private void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                conn.Open();
-                string query = "insert into Categorytb values('"+ cnametext.Text+ "','"+textBox3.Text+"' ) ";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                MessageBox.Show("Category Add Successfuly");
-                clear();
-                conn.Close();
-                populate();
+                if (cnametext.Text == "" || textBox3.Text == "")
+                {
 
+                    MessageBox.Show("Please Complete All Infromations");
+
+                }
+                else
+                {
+                    conn.Open();
+                    string query = "insert into Categorytb values('" + cnametext.Text + "','" + textBox3.Text + "' ) ";
+                    
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Category Add Successfuly");
+                    clear();
+                    conn.Close();
+                    populate();
+                }
             }
             catch (Exception ex) {
-                MessageBox.Show("some thing Error try later");
-            
+                MessageBox.Show(ex.Message);
+                conn.Close();
             }
 
         }
@@ -76,10 +88,12 @@ namespace SuperMarketApp
         private void ManageCategory_Load_1(object sender, EventArgs e)
         {
             populate();
+           
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+
             try
             {
                 conn.Open();
@@ -95,36 +109,73 @@ namespace SuperMarketApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
+                MessageBox.Show(ex.Message);
 
             }
         }
-
+    
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            button1.Enabled = false;
             Cidtext.Text = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
             cnametext.Text = dataGridView1.SelectedRows[0].Cells[1].Value.ToString();
             textBox3.Text = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
+          
         }
-
+       
         private void button2_Click(object sender, EventArgs e)
         {
+
+
             try
             {
                 conn.Open();
-                string query = "delete from Categorytb where CID='" + Cidtext.Text + "' ";
+                string query = "(select count(*)  from ProductTb where prodcatid = (select top(1) CID from Categorytb where CID = '"+Cidtext.Text+"' )) " ;
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                MessageBox.Show("Category Deleted Successfuly");
 
-                clear();
-                conn.Close();
-                populate();
+                SqlDataReader dr = cmd.ExecuteReader();
+               
+                while (dr.Read())
+                {
+                    z = Convert.ToInt32(dr[0]);
+               
+                }
+                dr.Close();
+                    if ( z> 0)
+                    {
 
+
+                        MessageBox.Show(" you can't delete this category ");
+                        clear();
+                        conn.Close();
+                       
+                    }
+
+                    else
+                    {
+
+                    conn.Close();
+
+                        conn.Open();
+                        string query2 = "delete from Categorytb where CID='" + Cidtext.Text + "' ";
+                        SqlCommand cmd2 = new SqlCommand(query2, conn);
+                        cmd2.ExecuteNonQuery();
+                        MessageBox.Show("Category Deleted Successfuly");
+
+                        clear();
+                        conn.Close();
+                   
+                        populate();
+
+
+                    }
+
+                   
+                
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
+                MessageBox.Show(ex.Message);
 
             }
         }
@@ -149,5 +200,20 @@ namespace SuperMarketApp
             this.Hide();
             s.Show();
         }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+            clear();
+            button1.Enabled = true;
+        }
+
+       
+
+    
     }
 }

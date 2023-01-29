@@ -12,9 +12,12 @@ using System.Windows.Forms;
 
 namespace SuperMarketApp
 {
+    
     public partial class ManageProducts : Form
     {
+      
         SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["market-Conn"].ConnectionString);
+       public static int x;
         public ManageProducts()
         {
             InitializeComponent();
@@ -50,9 +53,31 @@ namespace SuperMarketApp
             dt.Columns.Add("Cname", typeof(string));
             dt.Load(dr);
             comboBox1.ValueMember = "Cname";
-            comboBox2.ValueMember = "Cname";
+           
             comboBox1.DataSource = dt;
+           
+
+
+
+            conn.Close();
+
+
+
+        }
+        private void fillcombo2()
+        {
+            conn.Open();
+            string query = "select Cname from Categorytb";
+            SqlCommand cmd = new SqlCommand(query, conn);
+            SqlDataReader dr;
+            dr = cmd.ExecuteReader();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Cname", typeof(string));
+            dt.Load(dr);
+            comboBox2.ValueMember = "Cname";
+
             comboBox2.DataSource = dt;
+
 
 
 
@@ -79,33 +104,54 @@ namespace SuperMarketApp
             Application.Exit();
 
         }
+     
+       
 
         private void ManageProducts_Load(object sender, EventArgs e)
         {
-           
+            fillcombo2();
             populate();
             fillcombo();
             clear();
         }
-
+       
         private void button1_Click(object sender, EventArgs e)
         {
+         
             try
             {
+               
                 conn.Open();
-                string query = "insert into ProductTb values('" + textBox2.Text + "','" + textBox3.Text + "','" + textBox4.Text + "','" + comboBox1.SelectedValue.ToString() + "' ) ";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                MessageBox.Show("Product Added Successfuly");
-                clear();
-                conn.Close();
-                populate();
+                string query1 = "select CID from Categorytb where Cname='" + comboBox1.SelectedValue.ToString() + "' ";
 
+                SqlCommand cmd1 = new SqlCommand(query1, conn);
+                SqlDataReader dr;
+                
+                dr = cmd1.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    x = Convert.ToInt32(dr[0]);
+                }
+                dr.Close();
+                string query = "insert into ProductTb values('" + textBox2.Text + "','" + textBox3.Text + "','" + textBox4.Text + "','" + comboBox1.SelectedValue.ToString() + "','" + x + "' ) ";
+
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                   
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Product Added Successfuly");
+                    clear();
+                    conn.Close();
+                  
+                    populate();
+                
+            
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
-
+                MessageBox.Show(ex.Message.ToString());
+                conn.Close();
+         
             }
         }
 
@@ -126,20 +172,24 @@ namespace SuperMarketApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
+                MessageBox.Show(ex.Message);
 
             }
         }
-       
 
+       
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            button1.Enabled = false;
             textBox1.Text = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
             textBox2.Text = dataGridView1.SelectedRows[0].Cells[1].Value.ToString();
             textBox3.Text = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
             textBox4.Text = dataGridView1.SelectedRows[0].Cells[3].Value.ToString();
            comboBox1.SelectedValue= dataGridView1.SelectedRows[0].Cells[4].Value.ToString();
-           
+          
+
+
+
 
 
 
@@ -147,25 +197,31 @@ namespace SuperMarketApp
 
         private void button2_Click(object sender, EventArgs e)
         {
+           
+            
           
-
             try
             {
-                conn.Open();
-                string query = "delete from ProductTb where ProdID='" + textBox1.Text + "' ";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
+
+             
+                   
+
+                        string query2 = "delete from ProductTb where ProdID='" + textBox1.Text + "'  ";
+                        SqlCommand cmd2 = new SqlCommand(query2, conn);
+                        cmd2.ExecuteNonQuery();
+
+                        MessageBox.Show("Product Deleted Successfuly");
+
+                        clear();
+                        conn.Close();
+                        populate();
+                    
                 
-                MessageBox.Show("Product Deleted Successfuly");
-
-                clear();
-                conn.Close();
-                populate();
-
+                
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
+                MessageBox.Show(ex.Message);
 
             }
         }
@@ -199,6 +255,29 @@ namespace SuperMarketApp
             Form1 f = new Form1();
             this.Hide();
             f.Show();
+        }
+
+        private void label5_Click_1(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+            clear();
+            button1.Enabled = true;
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+            Selling mg = new Selling();
+            this.Hide();
+            mg.Show();
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+            ///make 
         }
     }
 }

@@ -46,21 +46,33 @@ namespace SuperMarketApp
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            
+            
+
             try
             {
-                conn.Open();
-                string query = "insert into SellerTb values('" + textBox2.Text + "','" + textBox3.Text + "','" + textBox4.Text + "','" + textBox5.Text + "' ) ";
-                SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.ExecuteNonQuery();
-                MessageBox.Show("Seller Added Successfuly");
-                clear();
-                conn.Close();
-                populate();
 
+                if (textBox2.Text == "" || textBox3.Text == "" || textBox4.Text == "" || textBox5.Text == "")
+                {
+                    MessageBox.Show(" Please complete your infromation ");
+
+                }
+                else
+                {
+
+                    conn.Open();
+                    string query = "insert into SellerTb values('" + textBox2.Text + "','" + textBox3.Text + "','" + textBox4.Text + "','" + textBox5.Text + "' ) ";
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.ExecuteNonQuery();
+                    MessageBox.Show("Seller Added Successfuly");
+                    clear();
+                    conn.Close();
+                    populate();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("some thing Error try later");
+                MessageBox.Show(ex.Message);
 
             }
 
@@ -117,6 +129,7 @@ namespace SuperMarketApp
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            button1.Enabled = false;
             textBox1.Text = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
             textBox2.Text = dataGridView1.SelectedRows[0].Cells[1].Value.ToString();
             textBox3.Text = dataGridView1.SelectedRows[0].Cells[2].Value.ToString();
@@ -143,6 +156,24 @@ namespace SuperMarketApp
             Form1 f = new Form1();
             this.Hide();
             f.Show();
+        }
+
+        private void label12_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void label11_Click_1(object sender, EventArgs e)
+        {
+            Selling mg = new Selling();
+            this.Hide();
+            mg.Show();
+        }
+
+        private void label13_Click(object sender, EventArgs e)
+        {
+            clear();
+            button1.Enabled = true;
         }
     }
 }

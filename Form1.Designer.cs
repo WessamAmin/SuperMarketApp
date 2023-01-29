@@ -63,7 +63,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(345, 456);
             this.panel1.TabIndex = 0;
-           
             // 
             // panel2
             // 
@@ -150,6 +149,7 @@
             this.passwordtext.Name = "passwordtext";
             this.passwordtext.Size = new System.Drawing.Size(166, 26);
             this.passwordtext.TabIndex = 4;
+            this.passwordtext.UseSystemPasswordChar = true;
             // 
             // usernametext
             // 
@@ -218,11 +218,11 @@
             this.label5.AutoSize = true;
             this.label5.BackColor = System.Drawing.SystemColors.Control;
             this.label5.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.label5.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.Firebrick;
-            this.label5.Location = new System.Drawing.Point(782, 4);
+            this.label5.Location = new System.Drawing.Point(779, 2);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(15, 14);
+            this.label5.Size = new System.Drawing.Size(20, 19);
             this.label5.TabIndex = 5;
             this.label5.Text = "X";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
